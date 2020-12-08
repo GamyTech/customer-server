@@ -249,7 +249,8 @@ paths:
   /get-user-with-token:
     get:
       summary: Your GET endpoint
-      tags: []
+      tags:
+        - Users
       responses:
         '200':
           description: OK

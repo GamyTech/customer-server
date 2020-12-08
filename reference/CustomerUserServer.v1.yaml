@@ -38,6 +38,8 @@ paths:
                     updated_at: '2019-08-24T14:15:22Z'
         '404':
           description: User Not Found
+        '500':
+          description: Internal Server Error
       operationId: getUserById
       description: Retrieve the information of the user with the matching user ID.
       parameters:
@@ -75,6 +77,8 @@ paths:
           description: User Not Found
         '409':
           description: Email Already Taken
+        '500':
+          description: Internal Server Error
       description: Update the infromation of an existing user by its id.
       requestBody:
         content:
@@ -132,6 +136,8 @@ paths:
           description: Missing Required Information
         '409':
           description: Email Already Taken
+        '500':
+          description: Internal Server Error
       requestBody:
         content:
           application/json:
@@ -176,31 +182,47 @@ paths:
       description: Create a new user.
       tags:
         - Users
+      security:
+        - Bearer: []
     parameters: []
-  /auth/login:
+  /auth:
     post:
-      summary: Authwnticate to the API
+      summary: Authenticate to the API
       operationId: authenticate
       responses:
         '200':
           description: OK
-        '201':
-          description: Created
           content:
             application/json:
               schema:
+                description: ''
                 type: object
                 properties:
                   token:
                     type: string
+                    minLength: 1
                   refresh_token:
                     type: string
+                    minLength: 1
                   validity_time:
                     type: string
+                    minLength: 1
                 required:
                   - token
                   - refresh_token
                   - validity_time
+              examples:
+                JSON:
+                  value:
+                    token: string
+                    refresh_token: string
+                    validity_time: string
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
       description: Authenticate the user to the API
       requestBody:
         content:
@@ -223,6 +245,33 @@ paths:
         description: User's credentials
       tags:
         - Auth
+    parameters: []
+  /get-user-with-token:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: getUserWithToken
+      parameters: []
+      security:
+        - Bearer: []
+      description: Get user details with the his token
 components:
   schemas:
     User:
@@ -274,7 +323,10 @@ components:
         - birth_date
         - created_at
         - updated_at
-  securitySchemes: {}
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
   responses: {}
 tags:
   - name: Users

@@ -1,0 +1,433 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: jassayah@makor-capital.com
+  description: API to manage users for games
+  title: Customer User Server
+  version: "1.0"
+servers:
+- url: http://localhost:3000
+tags:
+- name: Users
+- name: Auth
+paths:
+  /users/{id}:
+    get:
+      description: Retrieve the information of the user with the matching user ID.
+      operationId: getUserById
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Bearer Token to path in order to use the API
+        explode: false
+        in: header
+        name: Bearer
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                JSON:
+                  value:
+                    id: 1
+                    first_name: John
+                    last_name: Doe
+                    user_name: john.doe
+                    email: john.doe@example.com
+                    hashed_password: 3456dsgfpigh870adagol97gaOIUYf
+                    birth_date: 1996-06-06
+                    created_at: 2019-08-24T14:15:22Z
+                    updated_at: 2019-08-24T14:15:22Z
+              schema:
+                $ref: '#/components/schemas/User'
+          description: User Found
+        "404":
+          description: User Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get user by id
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+    patch:
+      description: Update the infromation of an existing user by its id.
+      operationId: updateUserById
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Bearer Token
+        explode: false
+        in: header
+        name: Bearer
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object'
+        content:
+          application/json:
+            examples: {}
+            schema:
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                user_name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                birth_date:
+                  type: string
+              type: object
+        description: Patch user properties to update.
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                JSON:
+                  value:
+                    id: 1
+                    first_name: John
+                    last_name: Doe
+                    user_name: john.doe
+                    email: john.doe@example.com
+                    hashed_password: safddsaf98*&^basdfJ
+                    birth_date: 1996-06-06
+                    created_at: 2019-07-24T14:15:22Z
+                    updated_at: 2019-08-24T14:15:22Z
+              schema:
+                $ref: '#/components/schemas/User'
+          description: User Updated
+        "404":
+          description: User Not Found
+        "409":
+          description: Email Already Taken
+        "500":
+          description: Internal Server Error
+      summary: Update user by id
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+  /users:
+    post:
+      description: Create a new user.
+      operationId: createNewUser
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_1'
+        content:
+          application/json:
+            examples:
+              JSON:
+                value:
+                  first_name: string
+                  last_name: string
+                  user_name: string
+                  email: user@example.com
+                  password: string
+                  confirm_password: string
+                  birth_date: 2019-08-24
+            schema:
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                user_name:
+                  type: string
+                email:
+                  format: email
+                  type: string
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+                birth_date:
+                  format: date
+                  type: string
+              required:
+              - birth_date
+              - confirm_password
+              - email
+              - first_name
+              - last_name
+              - password
+              - user_name
+              type: object
+        description: Post the necessary fields for the API to create a new user.
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                JSON:
+                  value:
+                    id: 1
+                    first_name: John
+                    last_name: Doe
+                    user_name: john.doe
+                    email: john.doe@example.com
+                    hashed_password: sdgfh*&huasdf87t
+                    birth_date: 1996-06-06
+                    created_at: 2019-08-24T14:15:22Z
+                    updated_at: 2019-08-24T14:15:22Z
+              schema:
+                $ref: '#/components/schemas/User'
+          description: User Created
+        "400":
+          description: Missing Required Information
+        "409":
+          description: Email Already Taken
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Create New User
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+  /auth:
+    post:
+      description: Authenticate the user to the API
+      operationId: authenticate
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_2'
+        content:
+          application/json:
+            examples:
+              JSON:
+                value:
+                  user_name: john.doe
+                  password: mysecretpassword
+            schema:
+              properties:
+                user_name:
+                  type: string
+                password:
+                  type: string
+              required:
+              - password
+              - user_name
+              type: object
+        description: User's credentials
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                JSON:
+                  value:
+                    token: string
+                    refresh_token: string
+                    validity_time: string
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Authenticate to the API
+      tags:
+      - Auth
+      x-eov-operation-handler: controllers/AuthController
+  /get-user-with-token:
+    get:
+      description: Get user details with the his token
+      operationId: getUserWithToken
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - Bearer: []
+      summary: Your GET endpoint
+      tags:
+      - Users
+      x-eov-operation-handler: controllers/UsersController
+components:
+  requestBodies:
+    inline_object_1:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_1'
+    inline_object:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object'
+    inline_object_2:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_2'
+  responses: {}
+  schemas:
+    User:
+      example:
+        hashed_password: hashed_password
+        updated_at: 2000-01-23T04:56:07.000+00:00
+        user_name: user_name
+        birth_date: 2000-01-23
+        last_name: last_name
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        first_name: first_name
+        email: email
+      properties:
+        id:
+          description: Unique identifier for the given user.
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        user_name:
+          type: string
+        email:
+          format: email
+          type: string
+        hashed_password:
+          type: string
+        birth_date:
+          format: date
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      required:
+      - birth_date
+      - created_at
+      - email
+      - first_name
+      - hashed_password
+      - id
+      - last_name
+      - updated_at
+      - user_name
+      title: User
+      type: object
+      x-examples:
+        JSON:
+          id: 1
+          first_name: John
+          last_name: Doe
+          user_name: john.doe
+          email: johndoe@example.com
+          hashed_password: 2354jb2345uygfsda35bkjsKJyg8G3
+          birth_date: 1996-06-06
+          created_at: 2019-08-24T14:15:22Z
+          updated_at: 2019-08-24T14:15:22Z
+    inline_object:
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        user_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        birth_date:
+          type: string
+      type: object
+    inline_object_1:
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        user_name:
+          type: string
+        email:
+          format: email
+          type: string
+        password:
+          type: string
+        confirm_password:
+          type: string
+        birth_date:
+          format: date
+          type: string
+      required:
+      - birth_date
+      - confirm_password
+      - email
+      - first_name
+      - last_name
+      - password
+      - user_name
+      type: object
+    inline_object_2:
+      properties:
+        user_name:
+          type: string
+        password:
+          type: string
+      required:
+      - password
+      - user_name
+      type: object
+    inline_response_200:
+      example:
+        refresh_token: refresh_token
+        validity_time: validity_time
+        token: token
+      properties:
+        token:
+          minLength: 1
+          type: string
+        refresh_token:
+          minLength: 1
+          type: string
+        validity_time:
+          minLength: 1
+          type: string
+      required:
+      - refresh_token
+      - token
+      - validity_time
+  securitySchemes:
+    Bearer:
+      scheme: bearer
+      type: http

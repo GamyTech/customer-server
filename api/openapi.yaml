@@ -24,14 +24,6 @@ paths:
         schema:
           type: string
         style: simple
-      - description: Bearer Token to path in order to use the API
-        explode: false
-        in: header
-        name: Bearer
-        required: true
-        schema:
-          type: string
-        style: simple
       responses:
         "200":
           content:
@@ -57,7 +49,9 @@ paths:
           description: Internal Server Error
       summary: Get user by id
       tags:
-      - Users
+        - Users
+      security:
+        - Bearer: []
       x-eov-operation-handler: controllers/UsersController
     patch:
       description: Update the infromation of an existing user by its id.
@@ -66,14 +60,6 @@ paths:
       - explode: false
         in: path
         name: id
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: Bearer Token
-        explode: false
-        in: header
-        name: Bearer
         required: true
         schema:
           type: string
@@ -126,7 +112,9 @@ paths:
           description: Internal Server Error
       summary: Update user by id
       tags:
-      - Users
+        - Users
+      security:
+        - Bearer: []
       x-eov-operation-handler: controllers/UsersController
   /users:
     post:

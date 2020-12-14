@@ -8,14 +8,17 @@ require('dotenv').config()
 /**
 * Authenticate to the API
 * Authenticate the user to the API
-*
-* inlineObject2 InlineObject2  (optional)
-* returns inline_response_200
 * */
 const authenticate = ({ body }) => new Promise(
   async (resolve, reject) => {
     try {
       const user = await db.User.findOne({ where: { user_name: body.user_name } });
+      if (user === null) {
+        const error = new Error('User not found')
+        error.status = 404
+        throw error
+      }
+
       const hashedFormDataPassword = crypto.pbkdf2Sync(body.password, user.salt, 100000, 64, 'sha512').toString('hex');
       if (user.hashed_password === hashedFormDataPassword) {
         const token = await jwt.sign({

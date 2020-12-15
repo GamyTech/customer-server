@@ -23,14 +23,9 @@ const authenticate = ({ body }) => new Promise(
       if (user.hashed_password === hashedFormDataPassword) {
         const token = await jwt.sign({
           id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
           user_name: user.user_name,
           email: user.email,
-          birth_date: user.birth_date,
-          hashed_password: user.hashed_password,
-          created_at: user.created_at,
-          updated_at: user.updated_at
+          balance: user.balance
         }, process.env.JWT_SECRET, { expiresIn: '24h' })
         resolve(Service.successResponse({ token }));
       } else {

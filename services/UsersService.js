@@ -81,7 +81,14 @@ const getUserById = ({ id }) => new Promise(
 const getUserWithToken = (body, dataFromToken) => new Promise(
   async (resolve, reject) => {
     try {
-      resolve(Service.successResponse(dataFromToken));
+      const user = await db.User.findOne({ where: { user_name: dataFromToken.user_name } })
+      if (user === null) {
+        const error = new Error('User not found')
+        error.status = 404
+        throw error
+      }
+
+      resolve(Service.successResponse(user));
     } catch (e) {
       reject(Service.rejectResponse(
         e.message || 'Invalid input',
@@ -97,8 +104,7 @@ const getUserWithToken = (body, dataFromToken) => new Promise(
 const updateUserById = ({ id, body }) => new Promise(
   async (resolve, reject) => {
     try {
-      const user = await db.User.findOne({ where: { id: id } })
-      if (user === null) {
+      if (await db.User.findOne({ where: { id: id } }) === null) {
         const error = new Error('User not found')
         error.status = 404
         throw error
@@ -110,6 +116,8 @@ const updateUserById = ({ id, body }) => new Promise(
         error.status = 400
         throw error
       }
+
+      const user = await db.User.findOne({ where: { id: id } })
 
       resolve(Service.successResponse(user));
     } catch (e) {

@@ -4,7 +4,7 @@
   "description": "API to manage users for games",
   "main": "index.js",
   "scripts": {
-    "prestart": "npm install",
+    "prestart": "npm install && npx sequelize-cli db:migrate",
     "start": "node index.js"
   },
   "keywords": [
